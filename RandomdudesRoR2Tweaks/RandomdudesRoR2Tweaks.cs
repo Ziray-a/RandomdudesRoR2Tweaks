@@ -1,10 +1,12 @@
 using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using R2API;
 using RoR2;
-using UnityEngine;
-using UnityEngine.AddressableAssets;
-using Helpers.ConfigHelper;
+using RoR2.ContentManagement;
+using System;
+using UnityEngine.Networking.NetworkSystem;
+using HarmonyLib;
 
 namespace MainGameTweaks
 {
@@ -42,6 +44,20 @@ namespace MainGameTweaks
         public const string PluginAuthor = "Ziray-a";
         public const string PluginName = "RandomdudesRoR2Tweaks";
         public const string PluginVersion = "1.0.0";
+        public static Action OnItemCatalogPreInit;
+
+        public static Action OnContagousItemManagerInit;
+
+        public static ManualLogSource log;
+
+        internal static void LogInfoFromClass(string Message)
+        {
+            log.LogInfo(Message);
+        }
+        internal static void LogErrorFromClass(string Message)
+        {
+            log.LogError(Message);
+        }
 
 
         // The Awake() method is run at the very start when the game is initialized.
@@ -51,14 +67,68 @@ namespace MainGameTweaks
             Log.Init(Logger);
 
             ConfigFile ExtendedConfigFile = new ConfigFile(Paths.ConfigPath + "\\RandomdudesTweakConfig.cfg", true);
-            ConfigHelper ConfHelper = new ConfigHelper();
-            ConfHelper.LoadConfigandConfigure(ExtendedConfigFile);
+            Items.Mocha.Init(ExtendedConfigFile);
+            On.RoR2.ItemCatalog.Init += ItemCatalogInit;
+            On.RoR2.Items.ContagiousItemManager.Init += ContaigosCatalogInit;
+
         }
 
         // The Update() method is run on every frame of the game.
         private void Update()
         {
-            //Do Stuff
+
         }
+
+
+        private void ItemCatalogInit(On.RoR2.ItemCatalog.orig_Init orig)
+        {
+            Action action = OnItemCatalogPreInit;
+            if (action != null)
+            {
+                Logger.LogInfo("Patching Item Catalog");
+            }
+
+            orig();
+        }
+
+        private void ContaigosCatalogInit(On.RoR2.Items.ContagiousItemManager.orig_Init orig)
+        {
+            Action action = OnContagousItemManagerInit;
+            if (action != null)
+            {
+                Logger.LogInfo("Patching Corruptables");
+            }
+
+
+            orig();
+
+
+        }
+
+        internal static void addPairToCatalog(ItemDef.Pair transformation)
+        {
+            ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem] = ItemCatalog.itemRelationships[DLC1Content.ItemRelationshipTypes.ContagiousItem].AddToArray(transformation);
+        }
+
+
+
+        internal static ItemDef FindItemDefPreCatalogInit(string identifier)
+        {
+            foreach (ItemDef itemDef in ContentManager.itemDefs)
+            {
+                if (itemDef.name == identifier)
+                {
+
+                    return itemDef;
+                }
+            }
+
+            return null;
+        }
+
+
+
+
     }
+
 }
