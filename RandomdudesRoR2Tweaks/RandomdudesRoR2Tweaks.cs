@@ -50,26 +50,19 @@ namespace MainGameTweaks
 
         public static ManualLogSource log;
 
-        internal static void LogInfoFromClass(string Message)
-        {
-            log.LogInfo(Message);
-        }
-        internal static void LogErrorFromClass(string Message)
-        {
-            log.LogError(Message);
-        }
 
 
         // The Awake() method is run at the very start when the game is initialized.
         public void Awake()
         {
+            RoR2Application.isModded = true;
             // Init our logging class so that we can properly log for debugging
             Log.Init(Logger);
 
             ConfigFile ExtendedConfigFile = new ConfigFile(Paths.ConfigPath + "\\RandomdudesTweakConfig.cfg", true);
-            Items.Mocha.Init(ExtendedConfigFile);
             On.RoR2.ItemCatalog.Init += ItemCatalogInit;
             On.RoR2.Items.ContagiousItemManager.Init += ContaigosCatalogInit;
+            Items.Mocha.Init(ExtendedConfigFile, Logger);
 
         }
 
@@ -86,6 +79,7 @@ namespace MainGameTweaks
             if (action != null)
             {
                 Logger.LogInfo("Patching Item Catalog");
+                action();
             }
 
             orig();
@@ -97,6 +91,7 @@ namespace MainGameTweaks
             if (action != null)
             {
                 Logger.LogInfo("Patching Corruptables");
+                action();
             }
 
 

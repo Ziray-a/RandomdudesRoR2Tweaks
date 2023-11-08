@@ -2,10 +2,14 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Logging;
 using RoR2;
+using UnityEngine.AddressableAssets;
+using RoR2.ExpansionManagement;
 
 
 
 using static MainGameTweaks.RandomdudesRoR2Tweaks;
+using System.Linq;
+using System;
 namespace MainGameTweaks.Items
 {
 
@@ -24,23 +28,18 @@ namespace MainGameTweaks.Items
         public static ConfigEntry<bool> MochaCorruption { get; set; }
 
 
-        internal static void Init(ConfigFile conf)
+        internal static void Init(ConfigFile conf, ManualLogSource Logger)
         {
             LoadConfig(conf);
 
             if (Enable.Value == true)
             {
-                /*
-                LogInfoFromClass("Loading Mocha");
-                LogInfoFromClass("The following config will be applied: "
-                + "\n Corrupted?: " + MochaCorruption.Value
-                + "\n Rarity: " + MochaRarity.Value
-                + "\n CorruptionList: " + MochaCorruptionList.Value);
-                */
+                Logger.LogInfo("Modifying Mocha");
                 OnItemCatalogPreInit += Modify;
 
                 if (MochaCorruption.Value == true)
                 {
+                    Logger.LogInfo("Corrupting Mocha");
                     OnContagousItemManagerInit += Corrupt;
                 }
             }
@@ -52,13 +51,13 @@ namespace MainGameTweaks.Items
             Enable = conf.Bind("MochaTweaks", "Enable Changes", false, "easily disable tampering");
             MochaRarity = conf.Bind("MochaTweaks", "Mocha Item Rarity", ItemRarities.White, "Change this to the desired Item Rarity");
             MochaCorruption = conf.Bind("MochaTweaks", "Mocha as Void Item", false, "Enable to make Mocha a Void Item");
-            MochaCorruptionList = conf.Bind("MochaTweaks", "Mocha corruption list", "Srynge, Hoof", "Add the Item Values of the desired Items to corrupt with Mocha spereated by a Comma");
+            MochaCorruptionList = conf.Bind("MochaTweaks", "Mocha corruption list", "Syringe, Hoof", "Add the Item Values of the desired Items to corrupt with Mocha spereated by a Comma");
         }
 
 
         public static void Corrupt()
         {
-            foreach (string Item in MochaCorruptionList.Value.Split(new char[] { ',', ' ' }))
+            foreach (string Item in MochaCorruptionList.Value.Split(new string[] { ", " }, StringSplitOptions.None))
             {
                 ItemDef.Pair transformation = new ItemDef.Pair()
                 {
@@ -75,9 +74,9 @@ namespace MainGameTweaks.Items
         public static void Modify()
         {
             ItemDef Mocha = DLC1Content.Items.AttackSpeedAndMoveSpeed;
-
             if (MochaCorruption.Value == true)
             {
+                Mocha.requiredExpansion = ExpansionCatalog.expansionDefs.FirstOrDefault(def => def.nameToken == "DLC1_NAME");
                 switch (MochaRarity.Value)
                 {
                     case ItemRarities.Red:
