@@ -1,8 +1,10 @@
 using BepInEx;
+using BepInEx.Configuration;
 using R2API;
 using RoR2;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using Helpers.ConfigHelper;
 
 namespace MainGameTweaks
 {
@@ -22,14 +24,14 @@ namespace MainGameTweaks
     [BepInDependency(LanguageAPI.PluginGUID)]
 
     // This attribute is required, and lists metadata for your plugin.
-    [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
+    [BepInPlugin(RandomdudesRoR2Tweaks.PluginGUID, RandomdudesRoR2Tweaks.PluginName, RandomdudesRoR2Tweaks.PluginVersion)]
 
     // This is the main declaration of our plugin class.
     // BepInEx searches for all classes inheriting from BaseUnityPlugin to initialize on startup.
     // BaseUnityPlugin itself inherits from MonoBehaviour,
     // so you can use this as a reference for what you can declare and use in your plugin class
     // More information in the Unity Docs: https://docs.unity3d.com/ScriptReference/MonoBehaviour.html
-    public class ExamplePlugin : BaseUnityPlugin
+    public class RandomdudesRoR2Tweaks : BaseUnityPlugin
     {
         // The Plugin GUID should be a unique ID for this plugin,
         // which is human readable (as it is used in places like the config).
@@ -47,6 +49,10 @@ namespace MainGameTweaks
         {
             // Init our logging class so that we can properly log for debugging
             Log.Init(Logger);
+
+            ConfigFile ExtendedConfigFile = new ConfigFile(Paths.ConfigPath + "\\RandomdudesTweakConfig.cfg", true);
+            ConfigHelper ConfHelper = new ConfigHelper();
+            ConfHelper.LoadConfigandConfigure(ExtendedConfigFile);
         }
 
         // The Update() method is run on every frame of the game.
