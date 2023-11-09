@@ -1,9 +1,16 @@
-# R2Boilerplate
+# RandomdudesRoR2Tweaks
 
-This repository contains a sample mod for Risk of Rain 2.
+#### This Mod is currently in active developement, so stay tuned for more features
 
-You can clone this repository, open the visual studio solution file and compile it immediately.
 
-This repository is meant to represent best practices for starting a simple mod.
 
-Once your mod get compiled, you can utilize the Thunderstore folder for later uploading it to https://thunderstore.io/c/riskofrain2/
+### Features:
+(Remember Features are disabled by default, pick and choose the features you want in the Mods Config)
+- Mocha can be made into a void item with a custom tier and with custom corruptable list
+
+and more to come!
+
+
+### Github:
+Do you have a feature you want added? Just create an issue at the [RandomdudesRoR2Tweaks Github Page](https://github.com/Ziray-a/RandomdudesRoR2Tweaks)
+
